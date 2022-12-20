@@ -5,16 +5,15 @@ let addDiv = {
   width: "200px",
 };
 
-let todo = document.getElementById("todo");
-let addItems = document.getElementById("addItems");
+let todo = document.getElementById("todoList");
 
 let div = document.createElement("div");
 
-addItems.addEventListener("click", function () {
-  for (let style in addDiv) {
-    div.style[style] = addDiv[style];
-    div.style.visibility = "visible";
-  }
+for (let style in addDiv) {
+  div.style[style] = addDiv[style];
+  return div;
+}
 
-  todo.appendChild(div);
+document.getElementById("addItems").addEventListener("click", function () {
+  div.innerHTML = todo;
 });
