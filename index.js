@@ -1,24 +1,27 @@
 //código escrito a partir de um tutorial -> https://freshman.tech/todo-list/
 
 //array que irá armazenar os itens da lista
-let listaTodo = [];
+let todoItems = [];
 
 function renderTodo(todo) {
   //seleciona a classe que a tarefa será inserida
   const list = document.querySelector(".js-todo-list");
 
+  const item = document.querySelector(`[data-key='${todo.id}']`); //fiquei procurando uma aspa aqui por uns 20min btw
+
   //verifica se o valor inserido é true, se não for será inserido uma string vazia
-  const validar = todo.checked ? "done" : "";
+  const isChecked = todo.checked ? "done" : "";
 
   //cria uma lista e armazena na constante node
   const node = document.createElement("li");
 
-  //define a classe de acordo o a validação
-  node.setAttribute("class", `todo-item ${validar}`);
+  //define a classe de acordo com a validação
+  node.setAttribute("class", `todo-item ${isChecked}`);
 
   //define o data-key com a id do input
   node.setAttribute("data-key", todo.id);
 
+  //criação do objeto na lista
   node.innerHTML = `
     <input id="${todo.id}" type="checkbox"/>
     <label for="${todo.id}" class="tick js-tick"></label>
@@ -28,7 +31,11 @@ function renderTodo(todo) {
     </button>
   `;
 
-  list.append(node);
+  if (item) {
+    list.replaceChild(node, item);
+  } else {
+    list.append(node);
+  }
 }
 
 //função que sera executada para adicionar o input no array
@@ -41,15 +48,25 @@ function addTodo(text) {
   };
 
   //o texto do objeto é inserido no array
-  listaTodo.push(todo);
+  todoItems.push(todo);
 
-  //printa a lista
+  //renderiza a tarefa adicionada
   renderTodo(todo);
 }
 
+//--------------------------------------------------------------------//
+//função para marcar uma tarefa como realizada
+function toggleDone(key) {
+  const index = todoItems.findIndex((item) => item.id === Number(key));
+
+  todoItems[index].checked = !todoItems[index].checked;
+  renderTodo(todoItems[index]);
+}
+//--------------------------------------------------------------------//
+
 const form = document.querySelector(".js-form");
 
-//o evento submit é acionado quando um form é inserido, normalmente usado par validar o form antes de mandar para o servidor
+//o evento submit é acionado quando um form é inserido, normalmente usado par isChecked o form antes de mandar para o servidor
 form.addEventListener("submit", (event) => {
   // impede que a página atualize depois que alguma tarefa for inserida
   event.preventDefault();
@@ -67,3 +84,25 @@ form.addEventListener("submit", (event) => {
     input.focus();
   }
 });
+
+//--------------------------------------------------------------------//
+//marcar a tarefa como completa
+//seleciona todo o div em que as tarefas estão renderizadas
+const list = document.querySelector(".js-todo-list");
+
+//atribui um click á lista e aos filhos (da lista)
+list.addEventListener("click", (event) => {
+  //a propriedade target retorna o elemento que acionou o evento
+  if (event.target.classList.contains("js-tick")) {
+    const itemKey = event.target.parentElement.dataset.key;
+    toggleDone(itemKey);
+  }
+
+  if (event.target.classList.contains("js-delete-todo")) {
+    const itemKey = event.target.parentElement.dataset.key;
+    deleteTodo(itemKey);
+  }
+});
+//--------------------------------------------------------------------//
+
+//delete todo
