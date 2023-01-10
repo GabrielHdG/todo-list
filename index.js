@@ -4,6 +4,8 @@
 let todoItems = [];
 
 function renderTodo(todo) {
+  localStorage.set("todoItemsRef", JSON.stringify(todoItems));
+
   //seleciona a classe que a tarefa será inserida
   const list = document.querySelector(".js-todo-list");
 
@@ -132,3 +134,13 @@ list.addEventListener("click", (event) => {
   }
 });
 //--------------------------------------------------------------------//
+
+document.addEventListener("DOMContentLoaded", () => {
+  const ref = localStorage.getItem("todoItemsRef");
+  if (ref) {
+    todoItems = JSON.parse(ref);
+    todoItems.forEach((t) => {
+      renderTodo(t);
+    });
+  }
+});
