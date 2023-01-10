@@ -9,6 +9,11 @@ function renderTodo(todo) {
 
   const item = document.querySelector(`[data-key='${todo.id}']`); //fiquei procurando uma aspa aqui por uns 20min btw
 
+  if (todo.deleted) {
+    item.remove();
+    return;
+  }
+
   //verifica se o valor inserido é true, se não for será inserido uma string vazia
   const isChecked = todo.checked ? "done" : "";
 
@@ -57,10 +62,29 @@ function addTodo(text) {
 //--------------------------------------------------------------------//
 //função para marcar uma tarefa como realizada
 function toggleDone(key) {
+  //localiza o todo na lista todoItems
   const index = todoItems.findIndex((item) => item.id === Number(key));
 
   todoItems[index].checked = !todoItems[index].checked;
   renderTodo(todoItems[index]);
+}
+//--------------------------------------------------------------------//
+
+//--------------------------------------------------------------------//
+//função para deletar
+function deleteTodo(key) {
+  //localiza o todo na lista todoItems
+  //o findIndex returna o primeiro elemento encontrado em uma lista que satisfaça as operações descritas
+  const index = todoItems.findIndex((item) => item.id === Number(key));
+
+  const todo = {
+    deleted: true, //adiciona uma nova propriedade
+    ...todoItems[index], //cria um novo objeto com as propriedades do todo atual
+  };
+
+  //basicamente recria a lista com os elementos que não são os que foram passados no parâmetro
+  todoItems = todoItems.filter((item) => item.id !== Number(key));
+  renderTodo(todo);
 }
 //--------------------------------------------------------------------//
 
@@ -98,11 +122,13 @@ list.addEventListener("click", (event) => {
     toggleDone(itemKey);
   }
 
+  //atribui click ao js-delete-todo
   if (event.target.classList.contains("js-delete-todo")) {
+    //a key do todo é reconhecida pela função
+    //a key é armazenada em uma constante
     const itemKey = event.target.parentElement.dataset.key;
+    //a constante serve de parâmetro para a função que irá executar a ação
     deleteTodo(itemKey);
   }
 });
 //--------------------------------------------------------------------//
-
-//delete todo
